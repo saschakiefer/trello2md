@@ -1,0 +1,26 @@
+{
+  "name": "trello2md",
+  "version": "0.0.1",
+  "description": "Converter for a Trello export JSON to a Markdown Document",
+  "main": "index.js",
+  "dependencies": {
+    "lodash": "^4.16.4",
+    "log4js": "^0.6.38"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saschakiefer/trello2md.git"
+  },
+  "author": "Sascha Kiefer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/saschakiefer/trello2md/issues"
+  },
+  "homepage": "https://github.com/saschakiefer/trello2md#readme"
+}

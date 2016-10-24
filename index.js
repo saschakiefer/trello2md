@@ -1,10 +1,19 @@
 var log4js = require('log4js');
 var _ = require('lodash');
 var fs = require('fs');
+var program = require('commander');
 
 var trelloJson = null;
 var trelloObject = null;
 
+
+/**
+ * Converts the Trello JSON export Object to an internal representation
+ *
+ * @param  {Object} jsonObject JSON object from Trello
+ *
+ * @return {Object} internal represenatation
+ */
 var convertJsonToInternalObject = function(jsonObject) {
 	logger.debug("Entering convertJsonToInternalObject");
 
@@ -41,11 +50,21 @@ var convertJsonToInternalObject = function(jsonObject) {
 	return intObject;
 };
 
+
+
+/**
+ * Converts the internal object representation to a markdown file
+ *
+ * @param  {Array} listArray    Array of the lists from the JSON file to keep the sort order
+ * @param  {Object} trelloObject internal Object representation of the source JSON file
+ *
+ * @return {String}              converted md string
+ */
 var convertTrelloObjectToMarkdown = function(listArray, trelloObject) {
 	logger.debug("Entering convertTrelloObjectToMarkdown");
 
-	var LIST_PREFIX = "## ";
-	var CARD_PREFIX = "\n#### ";
+	var LIST_PREFIX = "# ";
+	var CARD_PREFIX = "\n## ";
 	var ACTION_PREFIX = "* ";
 	var CHECKLIST_PREFIX = "* ";
 	var CHECKLIST_ITEM_PREFIX = "\t* ";
@@ -144,6 +163,16 @@ var convertTrelloObjectToMarkdown = function(listArray, trelloObject) {
 	return mdString;
 };
 
+
+/**
+ * Main converter method:
+ *   1. Load and convert the JSON Object to an internal representation
+ *   2. Convert the internal representation to the md string
+ *
+ * @param  {String} jsonFile JSON File name
+ *
+ * @return {String} md string
+ */
 var convertJson = function(jsonFile) {
 	logger.debug("Entering convertJson");
 
@@ -167,6 +196,14 @@ var convertJson = function(jsonFile) {
 
 };
 
+
+
+/**
+ * Write the converted md string to output file
+ *
+ * @param  {String} name Filename
+ * @param  {String} data md string
+ */
 var writeMdFile = function(name, data) {
 	// logger.debug(mdString);
 
@@ -179,20 +216,55 @@ var writeMdFile = function(name, data) {
 	});
 };
 
+
+
+/**
+ * Parse the command line arguments
+ */
+var parseArguments = function() {
+	var error = false;
+
+	program
+		.version('0.0.1')
+		.option('-s, --source-file [filename]', 'Filename of the Trello JSON export file')
+		.option('-o, --output-file [filename]', 'Filename of the markdown export')
+		.option('-l, --log-level [level]', 'Set log level [TRACE,DEBUG,INFO,WARN,ERROR,FATAL]. Default: ERROR', 'INFO')
+		.parse(process.argv);
+
+	if (!program.sourceFile) {
+		logger.error("The JSON source file is missing.");
+		error = true;
+	}
+
+	if (!program.outputFile) {
+		logger.error("The file name for the markdown export is missing.");
+		error = true;
+	}
+
+	if (error) {
+		process.exit(0);
+	}
+
+	if (_.includes(["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"], program.logLevel)) {
+		logger.setLevel(program.logLevel);
+		logger.info("Log level: " + program.logLevel);
+	} else {
+		logger.warn("Invalid log level. Log level set to default value [INFO]");
+	}
+};
+
+
+
 // **************************** MAIN ***************************************************************
 
 // Get logger
 var logger = log4js.getLogger("trello2md");
-logger.setLevel('DEBUG');
+logger.setLevel('INFO');
 logger.info("trello2md convert - version 0.0.1");
 
+
 // check the command line args expecting input json filename and output csv filename
-var args = process.argv.slice(2);
+parseArguments();
 
-if (args.length !== 2) {
-	logger.error("Usage: node index.js <input.json> <output.md>");
-	process.exit(0);
-}
-
-var mdString = convertJson(args[0]);
-writeMdFile(args[1], mdString);
+var mdString = convertJson(program.sourceFile);
+writeMdFile(program.outputFile, mdString);

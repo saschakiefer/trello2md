@@ -4,6 +4,7 @@
   "description": "Converter for a Trello export JSON to a Markdown Document",
   "main": "index.js",
   "dependencies": {
+    "commander": "^2.9.0",
     "lodash": "^4.16.4",
     "log4js": "^0.6.38"
   },

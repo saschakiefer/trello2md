@@ -230,6 +230,7 @@ var parseArguments = function() {
 		.option('-o, --output-file [filename]', 'Filename of the markdown export')
 		.option('-l, --log-level [level]', 'Set log level [TRACE,DEBUG,INFO,WARN,ERROR,FATAL]. Default: ERROR', 'INFO')
 		.option('-p, --pdf [filename]', 'Convert to PDF')
+		.option('-a, --pdf-auto-name', 'Convert to PDF with Board Name as file name')
 		.parse(process.argv);
 
 	if (!program.sourceFile) {
@@ -238,8 +239,7 @@ var parseArguments = function() {
 	}
 
 	if (!program.outputFile) {
-		logger.error("The file name for the markdown export is missing.");
-		error = true;
+		logger.warn("The file name for the markdown export is missing.");
 	}
 
 	if (error) {
@@ -255,6 +255,36 @@ var parseArguments = function() {
 };
 
 
+/**
+ * Convert the string to PDF (if needed)
+ *
+ * @param  {String} mdString mdString
+ */
+var convertToPdf = function(mdString) {
+	if (program.pdf || program.pdfAutoName) {
+		var markdownpdf = require("markdown-pdf");
+		var fileName;
+
+		var options = {
+			cssPath: "./nodeConverterThemeForTrello.css",
+			paperBorder: "1cm"
+		};
+
+		if (program.pdf) {
+			fileName = program.pdf;
+		} else {
+			fileName = _.startCase(trelloJson.name).replace(" ", "").replace("/", "").replace(":", "");
+			fileName = program.sourceFile.substring(0, program.sourceFile.lastIndexOf("/")) + "/" + fileName + ".pdf";
+		}
+
+		logger.info("The file name for the PDF is set to " + fileName);
+
+		markdownpdf(options).from.string(mdString).to(fileName, function() {
+			logger.info("PDF file created (" + program.pdf + ")");
+		});
+	}
+};
+
 
 // **************************** MAIN ***************************************************************
 
@@ -268,18 +298,16 @@ logger.info("trello2md convert - version 0.0.1");
 parseArguments();
 
 var mdString = convertJson(program.sourceFile);
-writeMdFile(program.outputFile, mdString);
+
+if (!program.outputFile) {
+	var fileName = _.startCase(trelloJson.name).replace(" ", "").replace("/", "").replace(":", "");
+	fileName = program.sourceFile.substring(0, program.sourceFile.lastIndexOf("/")) + "/" + fileName + ".md";
+
+	logger.info("The file name for the markdown is set to " + fileName);
+	writeMdFile(fileName, mdString);
+} else {
+	writeMdFile(program.outputFile, mdString);
+}
 
 // Convert to PDF if requested
-if (program.pdf) {
-	var markdownpdf = require("markdown-pdf");
-
-	var options = {
-		cssPath: "./nodeConverterThemeForTrello.css",
-		paperBorder: "1cm"
-	};
-
-	markdownpdf(options).from.string(mdString).to(program.pdf, function() {
-		logger.info("PDF file created (" + program.pdf + ")");
-	});
-}
+convertToPdf(mdString);

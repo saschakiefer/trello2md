@@ -6,7 +6,8 @@
   "dependencies": {
     "commander": "^2.9.0",
     "lodash": "^4.16.4",
-    "log4js": "^0.6.38"
+    "log4js": "^0.6.38",
+    "markdown-pdf": "^7.0.0"
   },
   "devDependencies": {
     "grunt": "^1.0.1"

@@ -1,0 +1,252 @@
+body {
+    font-size: 8px;
+}
+
+
+li {
+    font-size: 110%;
+}
+
+li li {
+    font-size: 100%;
+}
+
+li p {
+    font-size: 100%;
+    margin: .2em 0;
+}
+
+h1 {
+    color: #000;
+    font-size: 1.5em;
+    line-height: 1.5em;
+    margin:  4em 0 0 0;
+    border-bottom:1px solid #ccc;
+}
+
+h1:first-of-type {
+    margin:  0 0 0 0;
+}
+
+h2 {
+    color: #000;
+    font-size: 1.4em;
+    line-height: 1.4em;
+    margin: 1em 0 0 0;
+}
+
+h3 {
+    color: #000;
+    font-size: 1.3em;
+    line-height: 0.2em;
+    margin: 0 0 0 0;
+}
+
+h4 {
+    color: #000;
+    font-size: 1.2em;
+    line-height: 1.1667em;
+    margin: 0 0 0 0;
+}
+
+h5 {
+    color: #000;
+    font-size: 1.1em;
+    line-height: 1.3em;
+    margin: 0 0 0 0;
+}
+
+h6 {
+    font-size: 1em;
+    line-height: 1.5em;
+    margin: 0 0 0 0;
+}
+
+body,p,td,div {
+    color: #111;
+    font-family: "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif;
+    word-wrap: break-word;
+}
+
+a {
+    -webkit-transition: color .2s ease-in-out;
+    -moz-transition: color .2s ease-in-out;
+    -o-transition: color .2s ease-in-out;
+    -ms-transition: color .2s ease-in-out;
+    transition: color .2s ease-in-out;
+    color: #0d6ea1;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #3593d9;
+}
+
+.footnote {
+    color: #0d6ea1;
+    font-size: .8em;
+    vertical-align: super;
+}
+
+#wrapper img {
+    max-width: 100%;
+    height: auto;
+}
+
+dd {
+    margin-bottom: 1em;
+}
+
+li > p:first-child {
+    margin: 0;
+}
+
+ul ul,ul ol {
+    margin-bottom: .2em;
+}
+
+caption,col,colgroup,table,tbody,td,tfoot,th,thead,tr {
+    border-spacing: 0;
+}
+
+table {
+    border: 1px solid rgba(0,0,0,0.25);
+    border-collapse: collapse;
+    display: table;
+    empty-cells: hide;
+    margin: -1px 0 23px;
+    padding: 0;
+    table-layout: fixed;
+}
+
+caption {
+    display: table-caption;
+    font-weight: 700;
+}
+
+col {
+    display: table-column;
+}
+
+colgroup {
+    display: table-column-group;
+}
+
+tbody {
+    display: table-row-group;
+}
+
+tfoot {
+    display: table-footer-group;
+}
+
+thead {
+    display: table-header-group;
+}
+
+td,th {
+    display: table-cell;
+}
+
+tr {
+    display: table-row;
+}
+
+table th,table td {
+    font-size: 1.1em;
+    line-height: 23px;
+    padding: 0 1em;
+}
+
+table thead {
+    background: rgba(0,0,0,0.15);
+    border: 1px solid rgba(0,0,0,0.15);
+    border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+
+table tbody {
+    background: rgba(0,0,0,0.05);
+}
+
+table tfoot {
+    background: rgba(0,0,0,0.15);
+    border: 1px solid rgba(0,0,0,0.15);
+    border-top: 1px solid rgba(0,0,0,0.2);
+}
+
+figure {
+    display: inline-block;
+    position: relative;
+    margin: 1em 0 2em;
+}
+
+figcaption {
+    font-style: italic;
+    text-align: center;
+    background: white;
+    color: #666;
+    position: absolute;
+    left: 0;
+    bottom: -24px;
+    width: 98%;
+    padding: 1%;
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    -o-transition: all .2s ease-in-out;
+    -ms-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+}
+
+figure:hover>figcaption {
+    /* background: rgba(0,0,0,1) */
+}
+
+.poetry pre {
+    display: block;
+    font-family: Georgia, Garamond, serif !important;
+    font-size: 110% !important;
+    font-style: italic;
+    line-height: 1.6em;
+    margin-left: 1em;
+}
+
+.poetry pre code {
+    font-family: Georgia, Garamond, serif !important;
+}
+
+blockquote p {
+    font-size: 110%;
+    font-style: italic;
+    line-height: 1.6em;
+}
+
+sup,sub,a.footnote {
+    font-size: 1.4ex;
+    height: 0;
+    line-height: 1;
+    position: relative;
+    vertical-align: super;
+}
+
+sub {
+    vertical-align: sub;
+    top: -1px;
+}
+
+p,h5 {
+    font-size: 1.1429em;
+    line-height: 1.3125em;
+    margin: 1em 0;
+}
+
+dt,th {
+    font-weight: 700;
+}
+
+table tr:nth-child(odd),table th:nth-child(odd),table td:nth-child(odd) {
+    background: rgba(255,255,255,0.06);
+}
+
+table tr:nth-child(even),table td:nth-child(even) {
+    background: rgba(200,200,200,0.25);
+}

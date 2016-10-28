@@ -229,6 +229,7 @@ var parseArguments = function() {
 		.option('-s, --source-file [filename]', 'Filename of the Trello JSON export file')
 		.option('-o, --output-file [filename]', 'Filename of the markdown export')
 		.option('-l, --log-level [level]', 'Set log level [TRACE,DEBUG,INFO,WARN,ERROR,FATAL]. Default: ERROR', 'INFO')
+		.option('-p, --pdf [filename]', 'Convert to PDF')
 		.parse(process.argv);
 
 	if (!program.sourceFile) {
@@ -268,3 +269,17 @@ parseArguments();
 
 var mdString = convertJson(program.sourceFile);
 writeMdFile(program.outputFile, mdString);
+
+// Convert to PDF if requested
+if (program.pdf) {
+	var markdownpdf = require("markdown-pdf");
+
+	var options = {
+		cssPath: "./nodeConverterThemeForTrello.css",
+		paperBorder: "1cm"
+	};
+
+	markdownpdf(options).from.string(mdString).to(program.pdf, function() {
+		logger.info("PDF file created (" + program.pdf + ")");
+	});
+}

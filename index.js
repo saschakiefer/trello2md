@@ -14,25 +14,34 @@ var trelloObject = null;
  *
  * @return {Object} internal represenatation
  */
-var convertJsonToInternalObject = function(jsonObject) {
+var convertJsonToInternalObject = function (jsonObject) {
 	logger.debug("Entering convertJsonToInternalObject");
 
 	var intObject = Object;
 
-	_.forEach(jsonObject.lists, function(list) {
+	_.forEach(jsonObject.lists, function (list) {
 		logger.debug("Processing list: " + list.name + " (" + list.id + ")");
+
+		if (list.closed == true) {
+			logger.debug("  List is already closed and will be ignored");
+			return;
+		}
+
 		intObject[list.id] = list;
 
-		// Get Cards for List
-		intObject[list.id].CARDS = _.filter(jsonObject.cards, ["idList", list.id]);
+		// Get Cards which are not closed for List
+		intObject[list.id].CARDS = _.filter(jsonObject.cards, {
+			'idList': list.id,
+			'closed': false
+		});
 		logger.debug("   " + intObject[list.id].CARDS.length + " card(s) found");
 
 		// Get Actions and Checklists for Card
-		_.forEach(intObject[list.id].CARDS, function(card) {
+		_.forEach(intObject[list.id].CARDS, function (card) {
 			logger.debug("      Processing card: " + card.name + " (" + card.id + ")");
 
 			// Actions
-			card.ACTIONS = _.filter(jsonObject.actions, function(filterObject) {
+			card.ACTIONS = _.filter(jsonObject.actions, function (filterObject) {
 				if (filterObject.type == "commentCard" && filterObject.data.card.id == card.id) {
 					return true;
 				}
@@ -54,37 +63,46 @@ var convertJsonToInternalObject = function(jsonObject) {
 
 /**
  * Converts the internal object representation to a markdown file
+ * We loop over the original list array , cause this contains the sort order
  *
  * @param  {Array} listArray    Array of the lists from the JSON file to keep the sort order
  * @param  {Object} trelloObject internal Object representation of the source JSON file
  *
  * @return {String}              converted md string
  */
-var convertTrelloObjectToMarkdown = function(listArray, trelloObject) {
+var convertTrelloObjectToMarkdown = function (listArray, trelloObject) {
 	logger.debug("Entering convertTrelloObjectToMarkdown");
+	logger.debug(trelloObject);
 
 	var LIST_PREFIX = "# ";
 	var CARD_PREFIX = "\n## ";
 	var ACTION_PREFIX = "* ";
 	var CHECKLIST_PREFIX = "* ";
 	var CHECKLIST_ITEM_PREFIX = "\t* ";
+	var CHECKLIST_PRE_TEXT = "";
 
 	var mdString = "";
 
 	// Loop original list, to keep sort Order
-	_.forEach(listArray, function(list) {
+	_.forEach(listArray, function (list) {
+
+		// Check if the list was processed before, or if it was filtered aus because it's already closed
+		if (!trelloObject[list.id]) {
+			return;
+		}
+
 		var currentObject = trelloObject[list.id];
 		logger.debug("Converting list: " + currentObject.name);
 
 		mdString = mdString + LIST_PREFIX + currentObject.name + "\n";
 
 		// Cards
-		_.forEach(currentObject.CARDS, function(card) {
+		_.forEach(currentObject.CARDS, function (card) {
 
 			// Build label string
 			var labels = "";
 
-			_.forEach(card.labels, function(label) {
+			_.forEach(card.labels, function (label) {
 				labels = labels + "\\[" + label.name + "\\] ";
 
 			});
@@ -99,7 +117,7 @@ var convertTrelloObjectToMarkdown = function(listArray, trelloObject) {
 
 			// Actions
 			_.reverse(card.ACTIONS);
-			_.forEach(card.ACTIONS, function(action) {
+			_.forEach(card.ACTIONS, function (action) {
 				actionDate = new Date(action.date);
 				var month = "";
 				var day = "";
@@ -133,10 +151,10 @@ var convertTrelloObjectToMarkdown = function(listArray, trelloObject) {
 					prefNL = "\n";
 				}
 
-				_.forEach(card.CHECKLISTS, function(checklist) {
-					mdString = mdString + prefNL + CHECKLIST_PREFIX + "Checklist: " + checklist.name + "\n";
+				_.forEach(card.CHECKLISTS, function (checklist) {
+					mdString = mdString + prefNL + CHECKLIST_PREFIX + CHECKLIST_PRE_TEXT + checklist.name + "\n";
 
-					_.forEach(checklist.checkItems, function(item) {
+					_.forEach(checklist.checkItems, function (item) {
 						var checkBox;
 
 						if (item.state == "incomplete") {
@@ -173,7 +191,7 @@ var convertTrelloObjectToMarkdown = function(listArray, trelloObject) {
  *
  * @return {String} md string
  */
-var convertJson = function(jsonFile) {
+var convertJson = function (jsonFile) {
 	logger.debug("Entering convertJson");
 
 	try {
@@ -204,10 +222,10 @@ var convertJson = function(jsonFile) {
  * @param  {String} name Filename
  * @param  {String} data md string
  */
-var writeMdFile = function(name, data) {
+var writeMdFile = function (name, data) {
 	// logger.debug(mdString);
 
-	fs.writeFile(name, data, function(err) {
+	fs.writeFile(name, data, function (err) {
 		if (err) {
 			return logger.error(err);
 		}
@@ -221,7 +239,7 @@ var writeMdFile = function(name, data) {
 /**
  * Parse the command line arguments
  */
-var parseArguments = function() {
+var parseArguments = function () {
 	var error = false;
 
 	program
